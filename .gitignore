@@ -1,0 +1,21 @@
+### IntelliJ IDEA ###
+.idea/
+*.iml
+out/
+
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+### Logs ###
+*.log
+
+### OS files ###
+.DS_Store
+Thumbs.db
+
+### Database Data (ignore whole Data folder) ###
+Data/
+
+### Other common ignores ###
+*.class
