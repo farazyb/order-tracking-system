@@ -5,12 +5,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.modulith.core.ApplicationModule;
 import org.springframework.modulith.core.ApplicationModules;
 import org.springframework.modulith.docs.Documenter;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
-class ProductServiceApplicationTests {
+class ProductEntityServiceApplicationTests {
 
     @Test
-    void contextLoads() {
+    void contextLoads()
+    {
+
         var am = ApplicationModules.of(ProductServiceApplication.class);
         am.verify();
         System.out.println(am);

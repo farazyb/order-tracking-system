@@ -6,16 +6,15 @@ public record ProductDTO(
         String id,
         String name,
         double price,
-        int stockQuantity,
-        boolean active
+        String description
 ) {
     public static ProductDTO from(Product product) {
         return new ProductDTO(
-                product.getProductId().getValue(),
+                product.getProductId().value(),
                 product.getName(),
-                product.getPrice().getValue(),
-                product.getQuantity(),
-                product.isActive()
+                product.getPrice().amount().doubleValue(),
+                product.getDescription()
+
         );
     }
 }

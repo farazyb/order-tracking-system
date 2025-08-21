@@ -1,22 +1,18 @@
 package com.example.product_service.product.domain.model;
 
-import lombok.Data;
 
-@Data
-public class ProductId {
+public record ProductId(String value) {
+    public ProductId {
+        if (value == null || value.isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+    }
 
-    private String value;
-    public ProductId(String value) {
-        this.value = value;
+    public ProductId() {
+        this(java.util.UUID.randomUUID().toString());
     }
 
     public static ProductId of(String value) {
         return new ProductId(value);
     }
-
-    public static ProductId newId() {
-        return new ProductId(java.util.UUID.randomUUID().toString());
-    }
-
-
 }

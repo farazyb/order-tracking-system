@@ -1,41 +1,42 @@
 package com.example.product_service.product.application.service;
 
 import com.example.product_service.annotations.UseCase;
-import com.example.product_service.product.application.command.CreateProductCommand;
-import com.example.product_service.product.application.dtos.ProductDTO;
+import com.example.product_service.product.application.ProductApplicationServiceInterface;
 import com.example.product_service.product.domain.model.Money;
 import com.example.product_service.product.domain.model.Product;
 import com.example.product_service.product.domain.model.ProductId;
 import com.example.product_service.product.domain.repository.ProductRepository;
+import com.example.product_service.product.rest.dto.ProductCreateRequest;
+import com.example.product_service.product.rest.dto.ProductResponse;
 import org.springframework.beans.factory.annotation.Qualifier;
 
-import java.util.Optional;
+import java.math.BigDecimal;
+import java.util.List;
 
 @UseCase
-public class ProductApplicationService {
+public class ProductApplicationService implements ProductApplicationServiceInterface {
 
     private final ProductRepository productRepository;
 
-    public ProductApplicationService(@Qualifier("productJPARepository") ProductRepository productRepository) {
+    public ProductApplicationService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
-    public ProductDTO createProduct(CreateProductCommand cmd) {
-        Product product = new Product(
-                ProductId.newId(),
-                cmd.name(),
-                Money.of(cmd.price(), "EUR"),
-                cmd.stockQuantity(),
-                true
-        );
 
+
+    @Override
+    public void createProduct(ProductCreateRequest createRequest) {
+        Product product = Product.builder()
+                .productId(new ProductId())
+                .name(createRequest.name())
+                .description(createRequest.description())
+                .price(Money.of(BigDecimal.valueOf(createRequest.price()), "EURO"))
+                .build();
         productRepository.save(product);
-
-        return ProductDTO.from(product);
     }
 
-    public Optional<ProductDTO> getProduct(String id) {
-        return productRepository.findById(ProductId.of(id))
-                .map(ProductDTO::from);
+    @Override
+    public List<ProductResponse> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        return products.stream().map(ProductResponse::from).toList();
     }
-
 }
