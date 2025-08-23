@@ -29,7 +29,7 @@ public class ProductApplicationService implements ProductApplicationServiceInter
                 .productId(new ProductId())
                 .name(createRequest.name())
                 .description(createRequest.description())
-                .price(Money.of(BigDecimal.valueOf(createRequest.price()), "EURO"))
+                .price(Money.of(createRequest.price(), "EURO"))
                 .build();
         productRepository.save(product);
     }
