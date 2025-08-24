@@ -6,9 +6,8 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# Needed so the action can POST dependency snapshots
 permissions:
-  contents: write
+  contents: write   # needed for dependency submission
 
 jobs:
   build:
@@ -27,9 +26,11 @@ jobs:
       - name: Build product-service
         run: mvn -B -ntp -f product-service/pom.xml package
 
-      # Only submit dependencies when the token has write perms (push to main)
+      # submit from the reactor root so `depgraph:aggregate` works
       - name: Submit dependency snapshot
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: advanced-security/maven-dependency-submission-action@v5
         with:
-          directory: product-service
+          directory: .
+          # optional, ensures we use system mvn if no mvnw at root:
+          ignore-maven-wrapper: true
