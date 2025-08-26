@@ -1,3 +1,18 @@
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write    # needed for dependency submission on push to main
+  packages: write    # future-proof if you also push to GHCR   # needed for dependency submission
 env:
   MODULE: product-service
   IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/product-service
