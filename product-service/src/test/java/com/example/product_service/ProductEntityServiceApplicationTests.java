@@ -66,6 +66,7 @@ class ProductEntityServiceApplicationTests {
                 .name("P1")
                 .description("New Product")
                 .price(new BigDecimal("10.5"))
+                .skuCode("P1")
                 .build();
     }
 

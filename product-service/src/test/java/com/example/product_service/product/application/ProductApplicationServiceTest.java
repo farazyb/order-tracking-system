@@ -1,9 +1,12 @@
 package com.example.product_service.product.application;
 
 import com.example.product_service.product.application.service.ProductApplicationService;
+import com.example.product_service.product.domain.UniqueSkuCodeChecker;
+import com.example.product_service.product.domain.exceptions.DuplicateSkuCode;
 import com.example.product_service.product.domain.model.Money;
 import com.example.product_service.product.domain.model.Product;
 import com.example.product_service.product.domain.model.ProductId;
+import com.example.product_service.product.domain.model.SkuCode;
 import com.example.product_service.product.domain.repository.ProductRepository;
 import com.example.product_service.product.rest.dto.ProductCreateRequest;
 import com.example.product_service.product.rest.dto.ProductResponse;
@@ -28,6 +31,8 @@ class ProductApplicationServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock
+    private UniqueSkuCodeChecker uniqueSkuCodeChecker;
 
     @InjectMocks
     private ProductApplicationService productApplicationService;
@@ -42,8 +47,12 @@ class ProductApplicationServiceTest {
         var createRequest = new ProductCreateRequest(
                 "Super Widget",
                 "A widget that is super.",
-                new BigDecimal("199.99")
+                new BigDecimal("199.99"),
+                "P1"
         );
+        when(uniqueSkuCodeChecker.isUnique(SkuCode.of(createRequest.skuCode())))
+                .thenReturn(true);
+
 
         // Act
         productApplicationService.createProduct(createRequest);
@@ -99,5 +108,22 @@ class ProductApplicationServiceTest {
         assertThat(products.getFirst().price()).isEqualTo(10.0);
 
 
+    }
+
+    @Test
+    @DisplayName("Should throw duplicate sku code exception when sku code is not unique")
+    public void should_throw_duplicate_sku_code_exception_when_sku_code_is_not_unique() {
+        ProductCreateRequest productCreateRequest = new ProductCreateRequest(
+                "Super Widget",
+                "A widget that is super.",
+                new BigDecimal("199.99"),
+                "Watch-T1"
+        );
+
+        when(uniqueSkuCodeChecker.isUnique(SkuCode.of(productCreateRequest.skuCode())))
+                .thenReturn(false);
+        assertThatThrownBy(() -> productApplicationService.createProduct(productCreateRequest))
+                .isInstanceOf(DuplicateSkuCode.class);
+        verify(productRepository, never()).save(any(Product.class));
     }
 }

@@ -23,4 +23,5 @@ public class ProductEntity {
     private int quantity;
     private BigDecimal price;
     private boolean active;
+    private String skuCode;
 }

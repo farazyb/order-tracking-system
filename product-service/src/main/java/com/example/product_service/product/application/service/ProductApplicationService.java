@@ -2,9 +2,11 @@ package com.example.product_service.product.application.service;
 
 import com.example.product_service.annotations.UseCase;
 import com.example.product_service.product.application.ProductApplicationServiceInterface;
+import com.example.product_service.product.domain.UniqueSkuCodeChecker;
 import com.example.product_service.product.domain.model.Money;
 import com.example.product_service.product.domain.model.Product;
 import com.example.product_service.product.domain.model.ProductId;
+import com.example.product_service.product.domain.model.SkuCode;
 import com.example.product_service.product.domain.repository.ProductRepository;
 import com.example.product_service.product.rest.dto.ProductCreateRequest;
 import com.example.product_service.product.rest.dto.ProductResponse;
@@ -17,20 +19,20 @@ import java.util.List;
 public class ProductApplicationService implements ProductApplicationServiceInterface {
 
     private final ProductRepository productRepository;
+    private final UniqueSkuCodeChecker uniqueSkuCodeChecker;
 
-    public ProductApplicationService(ProductRepository productRepository) {
+    public ProductApplicationService(ProductRepository productRepository, @Qualifier("jpaUniqueSkuChecker") UniqueSkuCodeChecker uniqueSkuCodeChecker) {
         this.productRepository = productRepository;
+        this.uniqueSkuCodeChecker = uniqueSkuCodeChecker;
     }
 
 
     @Override
     public void createProduct(ProductCreateRequest createRequest) {
-        Product product = Product.builder()
-                .productId(new ProductId())
-                .name(createRequest.name())
-                .description(createRequest.description())
-                .price(Money.of(createRequest.price(), "EURO"))
-                .build();
+        Product product = Product.create(new ProductId(), createRequest.name()
+                , Money.of(createRequest.price(), "EURO"),
+                SkuCode.of(createRequest.skuCode()), createRequest.description(), uniqueSkuCodeChecker);
+
         productRepository.save(product);
     }
 

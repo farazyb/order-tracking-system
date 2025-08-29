@@ -1,5 +1,6 @@
 package com.example.product_service.product.rest.dto;
 
+import com.example.product_service.product.domain.model.SkuCode;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -17,6 +18,8 @@ public record ProductCreateRequest(
         @NotNull(message = "Product price cannot be null.")
         @DecimalMin(value = "0.0", inclusive = false, message = "Product price must be positive.")
         @Digits(integer = 10, fraction = 2, message = "Product price has an invalid format.")
-        BigDecimal price
+        BigDecimal price,
+        @NotBlank(message = "SKU code cannot be blank.")
+        String skuCode
 ) {
 }
